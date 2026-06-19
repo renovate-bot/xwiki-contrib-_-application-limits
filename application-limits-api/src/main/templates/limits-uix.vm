@@ -2,12 +2,15 @@
  * Display message when on the CreateWiki page
  *#
 #macro(displayWikisLimit)
-    #set ($wikiCount = $services.wiki.allIds.size())
     #set ($wikiLimit = $services.limits.wikiLimit)
-    #displayLimitProgressBar($wikiCount, $wikiLimit, 'limits.wikis.displayer')
-    #if ($wikiCount >= $wikiLimit)
-        ## Javascript that disable the 'create wiki' form
-        #addJavascript()
+    #if ($wikiLimit < 2147483647)
+        ## That magic constant is the highest Integer, aka no limit is set
+        #set ($wikiCount = $services.wiki.allIds.size())
+        #displayLimitProgressBar($wikiCount, $wikiLimit, 'limits.wikis.displayer')
+        #if ($wikiCount >= $wikiLimit)
+            ## Javascript that disable the 'create wiki' form
+            #addJavascript()
+        #end
     #end
 #end
 #**
@@ -22,12 +25,15 @@
  * Display the limit for the number of users
  *#
 #macro(displayUsersLimit)
-    #set ($userCount = $services.limits.userCount)
     #set ($userLimit = $services.limits.userLimit)
-    #displayLimitProgressBar($userCount, $userLimit, 'limits.user.displayer')
-    #if ($userCount >= $userLimit)
-        ## Javascript that disable the 'add user' button
-        #addJavascript()
+    #if ($userLimit < 2147483647)
+        ## That magic constant is the highest Integer, aka no limit is set
+        #set ($userCount = $services.limits.userCount)
+        #displayLimitProgressBar($userCount, $userLimit, 'limits.user.displayer')
+        #if ($userCount >= $userLimit)
+            ## Javascript that disable the 'add user' button
+            #addJavascript()
+        #end
     #end
 #end
 #**
