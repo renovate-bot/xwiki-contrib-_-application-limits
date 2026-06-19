@@ -19,6 +19,7 @@
  */
 package org.xwiki.contrib.limits.internal.configuration;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -85,6 +86,9 @@ public class DefaultLimitsConfiguration implements LimitsConfiguration, Initiali
     public void reload() throws Exception
     {
         Element limitsElem = getLimitsElement();
+        if (limitsElem == null) {
+            return;
+        }
 
         numberOfUsers = parseIntFromElement(limitsElem, "number-of-users");
         numberOfWikis = parseIntFromElement(limitsElem, "number-of-wikis");
@@ -96,8 +100,15 @@ public class DefaultLimitsConfiguration implements LimitsConfiguration, Initiali
 
     private Document getXMLDocument() throws Exception
     {
+        File file = configFile.toFile();
+        if (!file.exists()) {
+            // The limits file not existing is a valid state in which limits are unconfigured
+            logger.info("File [{}] does not exist, no limits will be enforced", configFile);
+            return null;
+        }
+
         try {
-            return (new SAXBuilder()).build(configFile.toFile());
+            return new SAXBuilder().build(file);
         } catch (JDOMException | IOException e) {
             throw new Exception(
                     String.format(
@@ -109,8 +120,8 @@ public class DefaultLimitsConfiguration implements LimitsConfiguration, Initiali
 
     private Element getLimitsElement() throws Exception
     {
-        // The result cannot be null, otherwise an exception has already been thrown by getXMLDocument().
-        return getXMLDocument().getRootElement();
+        Document doc = getXMLDocument();
+        return doc == null ? null : doc.getRootElement();
     }
 
 
